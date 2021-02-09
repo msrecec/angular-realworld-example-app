@@ -56,12 +56,6 @@ describe("Test with backend", () => {
   });
 
   it.only("delete a new article", () => {
-    const userCredentuals = {
-      user: {
-        email: "mislav.srecec3@gmail.com",
-        password: "L!b3rtas",
-      },
-    };
 
     const bodyRequest = {
       "article": {
@@ -71,15 +65,8 @@ describe("Test with backend", () => {
         "body": "Angular is cool",
       },
     };
-
-    cy.request(
-      "POST",
-      "http://conduit.productionready.io/api/users/login",
-      userCredentuals
-    )
-    .its("body")
-    .then((body) => {
-      const token = body.user.token;
+    cy.get('@token')
+    .then((token) => {
 
       cy.request({
         url: "http://conduit.productionready.io/api/articles/",

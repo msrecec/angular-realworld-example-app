@@ -25,8 +25,33 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add("loginToApplication", () => {
-  cy.visit("/login");
-  cy.get('[placeholder="Email"]').type("mislav.srecec3@gmail.com");
-  cy.get('[placeholder="Password"]').type("L!b3rtas");
-  cy.get("form").submit();
+
+  const userCredentuals = {
+    "user": {
+      "email": "mislav.srecec3@gmail.com",
+      "password": "L!b3rtas",
+    },
+  };
+
+  cy.request(
+    "POST",
+    "http://conduit.productionready.io/api/users/login",
+    userCredentuals
+  )
+  .its("body").then(body => {
+    const token = body.user.token
+    cy.wrap(token).as('token')
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        win.localStorage.setItem('jwtToken', token)
+      }
+    })
+
+  })
+  
+
+  // cy.visit("/login");
+  // cy.get('[placeholder="Email"]').type("mislav.srecec3@gmail.com");
+  // cy.get('[placeholder="Password"]').type("L!b3rtas");
+  // cy.get("form").submit();
 });
